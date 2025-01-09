@@ -24,10 +24,6 @@ function getHumanChoice() {
     }
 }
 
-
-
-
-
 function playGame() {
     // create new variable to keep track of scores
     let humanScore = 0;
@@ -49,7 +45,8 @@ function playGame() {
             //computerScore++;
         }
     }
-
+    /*
+ //for now remove logic that plays exactly five rounds
     // Loop to play 5 rounds
     for (let round = 1; round <= 5; round++) {
         console.log(`Round ${round}:`);
@@ -75,7 +72,27 @@ function playGame() {
         console.log(`Computer Score: ${computerScore}`);
         console.log(`Human Score: ${humanScore}`);
     }
-    
+    */
+
+    // add logic for one round (for now since i took out the play 5 rounds part)
+    const humanSelection = getHumanChoice();
+    const computerSelection = getComputerChoice();
+    const result = playRound(humanSelection, computerSelection);
+
+    console.log(`Computer chose: ${computerSelection}`);
+    console.log(`Human chose: ${humanSelection}`);
+    console.log(result);
+
+    // add update scores outside of play five rounds (for now)
+    if (result.includes("You win")) {
+        humanScore++;
+    } else if (result.includes("You lose")) {
+        computerScore++;
+    }
+
+    console.log(`Computer Score: ${computerScore}`);
+    console.log(`Human Score: ${humanScore}`);
+
     // determine overall winner
     if (humanScore > computerScore) {
         console.log("You are the winner!");
@@ -86,4 +103,5 @@ function playGame() {
     }
 }
 
+// Run the game
 playGame();

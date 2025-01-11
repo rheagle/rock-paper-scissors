@@ -1,107 +1,97 @@
 
 // randomly return rock, paper, or scissors
 function getComputerChoice() {
-    let getRandom = Math.floor(Math.random() * 3);
-    if (getRandom === 0) {
-        return "rock";
-    } else if (getRandom === 1) {
-        return "paper";
-    } else {
-        return "scissors";
-    }
-}
-//console.log(getComputerChoice());
-
-// write logic to get human choice
-function getHumanChoice() {
-    let input = prompt('Enter rock, paper, or scissors.').toLowerCase();
-    //console.log(input);
-    if ((input === "rock") || (input === "paper") || (input === "scissors")) {
-        return input; // valid input
-    } else {
-        alert('Invalid entry. Restart game.');
-        return;
-    }
+    const choices = ["rock", "paper", "scissors"];
+    return choices[Math.floor(Math.random() * 3)];
 }
 
-function playGame() {
-    // create new variable to keep track of scores
-    let humanScore = 0;
-    let computerScore = 0;
+// create buttons dynamically and add to the game container
+const gameContainer = document.getElementById("game-container");
+const resultContainer = document.getElementById("result-container");
 
-    // write game logic for single round
-    function playRound(humanChoice, computerChoice) {
-        if (humanChoice === computerChoice) {
-            return ("It's a tie!");
-        } else if (
-            (humanChoice === "rock" && computerChoice === "scissors") ||
-            (humanChoice === "paper" && computerChoice === "rock") ||
-            (humanChoice === "scissors" && computerChoice === "paper")
-        ) {
-            return (`You win, ${humanChoice} beats ${computerChoice}!`);
-            //humanScore++;
-        } else {
-            return (`You lose, ${computerChoice} beats ${humanChoice}!`);
-            //computerScore++;
-        }
-    }
-    /*
- //for now remove logic that plays exactly five rounds
-    // Loop to play 5 rounds
-    for (let round = 1; round <= 5; round++) {
-        console.log(`Round ${round}:`);
+["Rock", "Paper", "Scissors"].forEach(choice => {
+    const button = document.createElement("button");
+    button.textContent = choice;
+    button.id = choice.toLowerCase();
+    button.addEventListener("click", () => playRound(choice.toLowerCase(), getComputerChoice()));
+    gameContainer.appendChild(button);
+})
 
-        // generate choices for computer and human
-        const humanSelection = getHumanChoice();
-        const computerSelection = getComputerChoice();
+// scores
+let humanScore = 0;
+let computerScore = 0;
 
-        // call playRound and get result
-        const result = playRound(humanSelection, computerSelection);
-        
-        console.log(`Computer chose: ${computerSelection}`);
-        console.log(`Human chose: ${humanSelection}`);
-        console.log(result);
+    
+// play single round
+function playRound(humanChoice, computerChoice) {
+    let result;
 
-        // update scores
-        if (result.includes("You win")) {
-            humanScore++;
-        } else if (result.includes("You lose")) {
-            computerScore++;
-        }
-
-        console.log(`Computer Score: ${computerScore}`);
-        console.log(`Human Score: ${humanScore}`);
-    }
-    */
-
-    // add logic for one round (for now since i took out the play 5 rounds part)
-    const humanSelection = getHumanChoice();
-    const computerSelection = getComputerChoice();
-    const result = playRound(humanSelection, computerSelection);
-
-    console.log(`Computer chose: ${computerSelection}`);
-    console.log(`Human chose: ${humanSelection}`);
-    console.log(result);
-
-    // add update scores outside of play five rounds (for now)
-    if (result.includes("You win")) {
+    if (humanChoice === computerChoice) {
+        result = ("It's a tie!");
+    } else if (
+        (humanChoice === "rock" && computerChoice === "scissors") ||
+        (humanChoice === "paper" && computerChoice === "rock") ||
+        (humanChoice === "scissors" && computerChoice === "paper")
+    ) {
+        result = (`You win, ${humanChoice} beats ${computerChoice}!`);
         humanScore++;
-    } else if (result.includes("You lose")) {
-        computerScore++;
-    }
-
-    console.log(`Computer Score: ${computerScore}`);
-    console.log(`Human Score: ${humanScore}`);
-
-    // determine overall winner
-    if (humanScore > computerScore) {
-        console.log("You are the winner!");
-    } else if (computerScore > humanScore) {
-        console.log("You are a loser!");
     } else {
-        console.log("The game is a tie!");
+        result = (`You lose, ${computerChoice} beats ${humanChoice}!`);
+        computerScore++;
+        }
+
+    // check if there's a winner
+    if (humanScore === 5 || computerScore === 5) {
+        announceWinner();
+        return; // end the game
     }
+
+    // display result and updated scores
+    updateResults(result);
 }
 
-// Run the game
-playGame();
+// update results in the DOM
+function updateResults(result) {
+    resultContainer.innerHTML = `
+        <p>${result}</p>
+        <p>Computer Score: ${computerScore}</p>
+        <p>Human Score: ${humanScore}</p>
+    `;
+}
+
+// announce winner and reset game
+function announceWinner() {
+    const winner = 
+        humanScore === 5 ? "God damn it... you win :/" : "Fuck ya! I win, you lose!";
+        // line above uses ternary operator:
+        // condition ? valueIfTrue : valueIfFalse;
+    resultContainer.innerHTML = `
+        <p>${winner}</p>
+        <p>Final Score - Computer: ${computerScore}, Human: ${humanScore}</p>
+    `;
+
+    // disable buttons
+    const buttons = document.querySelectorAll("#game-container button");
+    buttons.forEach(button => (button.disabled = true));
+
+    // restart game button
+    const restartButton = document.createElement("button");
+    restartButton.textContent = "Restart Game";
+    restartButton.addEventListener("click", restartGame);
+    gameContainer.appendChild(restartButton);
+}
+
+// Restart the game
+function restartGame() {
+    humanScore = 0;
+    computerScore = 0;
+    updateResults("Game restarted. Make your move.");
+
+    // Re-enable buttons
+    const buttons = document.querySelectorAll("#game-container button");
+    buttons.forEach(button => (button.disabled = false));
+
+    // Remove restart button
+    const restartButton = document.querySelector("#game-container button:last-child");
+    if (restartButton) gameContainer.removeChild(restartButton);
+}
